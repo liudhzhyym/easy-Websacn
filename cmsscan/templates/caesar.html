@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main">
+<div class="row">
+        <div class="col-md-12">
+            <div class="text-wrap">
+                凯撒密码(未实现)
+            </div>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-lg-12">
+    <div class="input-group-lg">
+<form name="code" role="form">
+    <div class="form-group">
+        <label for="name">将要加密或解密的内容复制到以下区域</label>
+    <textarea id="oInput" rows="10" class="form-control"></textarea>
+    <center>
+        <br>
+        <button type="button" id="scan" class="btn btn-info btn-lg " aria-haspopup="true" aria-expanded="false" onClick="enCaesar()" ><b>加密</b></button>
+        &nbsp;&nbsp;<button type="button" id="scan" class="btn btn-info btn-lg " aria-haspopup="true" aria-expanded="false" onClick="deCaesar()" ><b>解密</b></button>
+         &nbsp;&nbsp;<button type="button" id="scan" class="btn btn-info btn-lg " aria-haspopup="true" aria-expanded="false" onClick="enumCaesar()" ><b>所有组合</b></button>
+         位移数(-25~25)：<input id="oCaesarOffset" style="width: 100px;" value="1">
+        
+</center>
+</div>
+</form>
+</div>
+</div>
+</div>
+<script>
+function enRailFence()
+{
+    removeSpace();
+    var strIn = oInput.value;
+    var strOut = "";
+    var width = clamp(oRailFenceWidth.value, 2, 200);
+    var dummy = (width - strIn.length % width) % width;
+    strIn += numChar(dummy, "@");
+    var height = strIn.length / width;
+
+    for (i = 0; i < width; i++)
+    {
+        for (var j = 0; j < height; j++)
+        {
+            strOut += strIn.charAt(j*width+i);
+        }
+    }
+    oInput.value = strOut;
+}
+
+function deRailFence()
+{
+    removeSpace();
+    var strIn = oInput.value;
+    var strOut = "";
+    var height = clamp(oRailFenceWidth.value, 2, 200);
+    var dummy = (height - strIn.length % height) % height;
+    strIn += numChar(dummy, "@");
+    var width = strIn.length / height;
+
+    for (i = 0; i < width; i++)
+    {
+        for (var j = 0; j < height; j++)
+        {
+            strOut += strIn.charAt(j*width+i);
+        }
+    }
+    oInput.value = strOut;
+}
+
+function enumEnRailFence()
+{
+    var aStrIn = oInput.value.split("\r\n");
+    oInput.value = aStrIn[0];
+    removeSpace();
+    var s = oInput.value;
+    var strOut = s + "\r\n\r\n";
+    var w = clamp(oRailFenceWidth.value, 2, 200);
+    var bMatch = oRailFenceMatch.checked;
+
+    for (var width = w; width < w + 15; width++)
+    {
+        if (width > s.length / 2)
+            break;
+        if (bMatch && s.length % width != 0)
+            continue;
+        var dummy = (width - s.length % width) % width;
+        var strIn = s + numChar(dummy, "@");
+        var height = strIn.length / width;
+        strOut += width + "栏：\r\n";
+
+        for (i = 0; i < width; i++)
+        {
+            for (var j = 0; j < height; j++)
+            {
+                strOut += strIn.charAt(j*width+i);
+            }
+        }
+        strOut += "\r\n\r\n";
+    }
+    oInput.value = strOut;
+}
+
+function enumDeRailFence()
+{
+    var aStrIn = oInput.value.split("\r\n");
+    oInput.value = aStrIn[0];
+    removeSpace();
+    var s = oInput.value;
+    var strOut = s + "\r\n\r\n";
+    var h = clamp(oRailFenceWidth.value, 2, 200);
+    var bMatch = oRailFenceMatch.checked;
+
+    for (var height = h; height < h + 15; height++)
+    {
+        if (height > s.length / 2)
+            break;
+        if (bMatch && s.length % height != 0)
+            continue;
+        var dummy = (height - s.length % height) % height;
+        var strIn = s + numChar(dummy, "@");
+        var width = strIn.length / height;
+        strOut += height + "栏：\r\n";
+
+        for (i = 0; i < width; i++)
+        {
+            for (var j = 0; j < height; j++)
+            {
+                strOut += strIn.charAt(j*width+i);
+            }
+        }
+        strOut += "\r\n\r\n";
+    }
+    oInput.value = strOut;
+}
+
+</script>
+{% endblock %}

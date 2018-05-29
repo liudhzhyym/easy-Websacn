@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="text-wrap">
+				获取旁站/c段
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="input-group-lg">
+				<input type="text" id="url" class="form-control" aria-label="..." name="url">
+                <input type="hidden" id="ip" class="form-control" aria-label="..." name="ip">
+                <br>
+                <center>
+                    <button type="button" id="domain2ip" class="btn btn-info btn-lg " aria-haspopup="true" aria-expanded="false"><b>ip查询</b></button>
+                &nbsp;&nbsp;<button type="button" id="pang" class="btn btn-info btn-lg " aria-haspopup="true" aria-expanded="false"><b>旁站查询</b></button>
+			    &nbsp;&nbsp;<button type="button" id="cadd" class="btn btn-info btn-lg " aria-haspopup="true" aria-expanded="false"><b>C段查询</b></button>
+                &nbsp;&nbsp;<button type="button" id="daochu" class="btn btn-info btn-lg " aria-haspopup="true" aria-expanded="false"><b>导出</b></button>
+                </center>
+            </div>
+		</div>
+    </div>
+    <form action="/api/download" method="post" id="saveform">
+        <input type="hidden" id="save" name="save">
+    </form>
+    <div class="row main-panel output">
+        <div class="col-md-1"></div>
+			<div class="col-md-10">
+				<div id="color" class="panel panel-primary">
+					<div class="panel-heading" id="result">
+						结果：
+					</div>
+                    <table class="table table-hover" >
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>网址</th>
+                            </tr>
+                        </thead>
+                    <tbody id="t_body">
+                    <!--output-->
+                    </tbody>
+                    </table>
+
+                </div>
+            </div>
+    </div>
+    <div class="row">
+		<div class="col-md-10">
+			<div class="text-wrap">
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</div>
+		</div>
+	</div>
+</div><br><br><br><br><br>
+    <script type="text/javascript">
+    var url2ip="/api/domain2ip";
+    var query="/api/query";
+    var save="/api/download";
+    var thread="/api/thread";
+    var url="";
+    var ip="";
+    var daochu="";
+    add_res="";
+
+function request(ip){
+    $.post(query,JSON.stringify([{"ip":ip}]),function (results){
+        if(results){
+            lengths=results.length;
+            add_res+="<tr><td>ip:  "+ip+"</td></tr>";
+
+            for(var i in results){
+                add_res+="<tr><td>"+i+"</td><td>"+results[i].domain+"</td></tr>";
+                daochu+=results[i].domain+"|"
+                $("#t_body").html(add_res);
+            }
+
+        }else{
+            add_res+="<tr><td>ip:"+ip+", 结果为 0</td></tr>";
+            $("#t_body").html(add_res);
+        }
+    },"json");
+}
+
+function urlcheck(){
+        url=$("#url").val();
+        if(url == "") {
+            alert("请输入ip或者域名");
+            return false;
+        }else{
+            return true;
+        }
+}
+
+
+function furl2ip(url){
+    $.post(url2ip,JSON.stringify([{"domain":url}]),function(data){
+            ip=data[0].ip
+            $("#result").html("结果：  "+ip)
+        },"json");
+}
+
+
+$(function() {
+    $("#pang").click(function() {
+        add_res=""
+        $("#t_body").html("")
+        if(ip){
+            $("#result").html("结果：  "+ip)
+            request(ip)
+        }else{
+            alert("请先获取ip")
+        }
+    });
+
+    $("#cadd").click(function() {
+        add_res=""
+        $("#t_body").html("")
+        var arr = ip.split(".");
+        if(ip){
+            $("#result").html("结果：  "+ip)
+            $.post(thread,JSON.stringify([{"ip":ip}]),function(data){
+                if(data){
+                    for(var count=1;count<255;count++){
+                        var ips = arr[0] + "." + arr[1] + "." + arr[2] + "." + count;
+                        $("#result").html("获取：  "+ips)
+                        request(ips)
+                    }
+                }
+            },"json");
+        }else{
+            alert("请先获取ip");
+        }
+    });
+
+    $("#daochu").click(function(){
+        daochu=daochu.substring(0,daochu.length-1);
+        $("#save").val(daochu)
+        $("#saveform").submit();
+    });
+
+    $("#domain2ip").click(function(){
+        add_res="";
+        var url=$("#url").val();
+        if(urlcheck()){
+            furl2ip(url)
+        }
+    });
+});
+
+
+
+</script>
+
+
+{% endblock %}

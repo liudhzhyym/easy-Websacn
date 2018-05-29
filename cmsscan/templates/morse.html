@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main">
+<div class="row">
+        <div class="col-md-12">
+            <div class="text-wrap">
+                摩斯电码
+            </div>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-lg-12">
+    <div class="input-group-lg">
+<form name="code" role="form">
+    <div class="form-group">
+        <label for="name">将要加密或解密的内容复制到以下区域</label>
+    <textarea id="oInput" rows="10" class="form-control"></textarea>
+    <center>
+        <br>
+        <button type="button" id="scan" class="btn btn-info btn-lg " aria-haspopup="true" aria-expanded="false" onClick="enMorse()" ><b>加密</b></button>
+        &nbsp;&nbsp;<button type="button" id="scan" class="btn btn-info btn-lg " aria-haspopup="true" aria-expanded="false" onClick="deMorse()" ><b>解密</b></button> 
+        <br>点：<input id="oMorseDot" style="width: 30px;" value="*"> 
+        划：<input id="oMorseDash" style="width: 30px;" value="-"> 
+        字母间隔：<input id="oMorseDiv" style="width: 30px;" value="/"> 
+        单词间隔：<input id="oMorseSpace" style="width: 30px;" value=" ">
+</center>
+</div>
+</form>
+</div>
+</div>
+</div>
+<script>
+function enMorse()
+{
+    var m1 = oMorseDot.value;
+    var m2 = oMorseDash.value;
+    var m3 = oMorseDiv.value;
+    var m4 = oMorseSpace.value;
+    var alpha = "abcdefghijklmnopqrstuvwxyz1234567890.,:'?-()@—。，：|？_（）·\r\n";
+    var codeStr = "abxbaaaxbabaxbaaxaxaabaxbbaxaaaaxaaxabbbxbabxabaaxbbxbaxbbbxabbaxbbabxabaxaaaxbxaabxaaabxabbxbaabxbabbxbbaaxabbbbxaabbbxaaabbxaaaabxaaaaaxbaaaaxbbaaaxbbbaaxbbbbaxbbbbbxabababxbbaabbxbbbaaaxabbbbaxaabbaaxbaaaabxbabbabxbabbabxabbabaxbaaabxabababxbbaabbxbbbaaaxabbbbaxaabbaaxbaaaabxbabbabxbabbabxabbabaxaaababxbabab";
+    codeStr = codeStr.replace(/x/g, m3).replace(/a/g, m1).replace(/b/g, m2);
+    var code = codeStr.split(m3);
+
+    var strIn = oInput.value;
+    var strOut = "", nCode;
+    for (var i = 0; i < strIn.length; i++)
+    {
+        nCode = alpha.indexOf(strIn.charAt(i).toLowerCase());
+        if (nCode != -1)
+            strOut += code[nCode] + m3;
+        else
+            strOut += m4;
+    }
+    oInput.value = strOut;
+}
+
+function deMorse()
+{
+    var m1 = oMorseDot.value;
+    var m2 = oMorseDash.value;
+    var m3 = oMorseDiv.value;
+    var m4 = oMorseSpace.value;
+    var codeStr="";
+    var alpha = "abcdefghijklmnopqrstuvwxyz1234567890.,:'?-()@—。，：|？_（）·\r\n";
+    var codeStr1 = "abxbaaaxbabaxbaaxaxaabaxbbaxaaaaxaaxabbbxbabxabaaxbbxbaxbbbxabbaxbbabxabaxaaaxbxaabxaaabxabbxbaabxbabbxbbaaxabbbbxaabbbxaaabbxaaaabxaaaaaxbaaaaxbbaaaxbbbaaxbbbbaxbbbbbxabababxbbaabbxbbbaaaxabbbbaxaabbaaxbaaaabxbabbabxbabbabxabbabaxbaaabxabababxbbaabbxbbbaaaxabbbbaxaabbaaxbaaaabxbabbabxbabbabxabbabaxaaababxbabab";
+    var oInput1=oInput.value.replace(/\r\n|\n/g,m3);//
+  for(var i=0;i<oInput1.length;i++){  
+    var temp1=oInput1.charAt(i);
+     if(temp1!=m1 && temp1!=m2 && temp1!=m3 && temp1!=m4 && temp1!="\r" && temp1!="\n" && temp1!=m5){
+       oInput1=oInput1.replace(temp1,m3);
+     }
+    }
+    for(var i = 0;i<codeStr1.length;i++){
+      var tempC =codeStr1.charAt(i);
+      if( tempC == 'a'){
+        codeStr = codeStr + m1; //a换成m1
+      }else if( tempC == 'b'){
+        codeStr = codeStr + m2;
+      }else if( tempC == 'x'){
+        codeStr = codeStr + m3;
+      }
+    }
+    //codeStr = codeStr.replace(/x/g, m3).replace(/a/g, m1).replace(/b/g, m2);  
+    var code = codeStr.split(m3);    
+    var rgExp = new RegExp(m4, "g");
+    var aStrIn = oInput1.replace(rgExp, m3).split(m3);
+    //alert(aStrIn);
+    var strOut = "", nCode;
+////////////////////////////////////
+    for (var i = 0; i < aStrIn.length; i++)
+    {
+        for (var j = 0; j < code.length; j++)
+        {
+            if (aStrIn[i] == code[j])
+            {
+                strOut += alpha.charAt(j);
+                break;
+            }
+        }
+        if (j == code.length && i < aStrIn.length-1)
+            strOut += " ";  
+    }
+    oInput.value = strOut;
+    /////////////////////////////////////////////////
+}
+
+</script>
+{% endblock %}
